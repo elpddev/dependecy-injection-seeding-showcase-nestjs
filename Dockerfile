@@ -1,4 +1,4 @@
-FROM node:16 AS builder
+FROM node:18 AS builder
 
 # Create app directory
 WORKDIR /app
@@ -7,14 +7,16 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Install app dependencies
-RUN npm install
+RUN pnpm install
 
 COPY . .
 
-RUN npm run build
+RUN pnpm run build
 
-FROM node:16
+FROM node:18
 
 WORKDIR /app
 
@@ -23,4 +25,4 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
-CMD [ "npm", "run", "start:prod" ]
+CMD [ "pnpm", "run", "start:prod" ]
