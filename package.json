@@ -4,6 +4,7 @@
   "description": "NestJS Prisma Client Starter Project",
   "author": "Marc Stammerjohann",
   "license": "MIT",
+  "packageManager": "pnpm@7.3.15",
   "keywords": [
     "nestjs",
     "prisma",
