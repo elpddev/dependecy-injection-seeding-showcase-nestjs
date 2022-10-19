@@ -1,5 +1,5 @@
-import { PrismaService } from "../Prisma.service";
-import { SeederClassType } from "./SeederClassType";
+import { PrismaService } from '../Prisma.service';
+import { SeederClassType } from './SeederClassType';
 
 export function provideSeederService<T extends SeederClassType>(
   seederClassType: T
