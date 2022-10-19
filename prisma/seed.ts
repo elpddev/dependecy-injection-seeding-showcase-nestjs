@@ -1,3 +1,33 @@
+import { NestFactory } from "@nestjs/core";
+import { DevelopmentSeederModule } from "./seeders/development/DevelopmentSeederModule";
+
+async function main() {
+  await bootstrap();
+}
+
+async function bootstrap() {
+  const seederModule = DevelopmentSeederModule;
+
+  const app = await NestFactory.createApplicationContext(seederModule, {
+    logger: [
+      "error",
+      "warn",
+      "log",
+      // "debug",
+      // "verbose"
+    ],
+  });
+
+  // Starts listening for shutdown hooks
+  app.enableShutdownHooks();
+
+  await app.close();
+}
+
+main()
+  .catch((e) => console.error(e));
+
+/*
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -56,3 +86,6 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+  */
+
+

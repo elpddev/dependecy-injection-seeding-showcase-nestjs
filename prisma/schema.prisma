@@ -24,6 +24,14 @@ model User {
   role      Role
 }
 
+model Currency {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  code      String   @unique
+  name      String
+}
+
 model Post {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
