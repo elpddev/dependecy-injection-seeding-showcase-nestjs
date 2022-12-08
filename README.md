@@ -1,12 +1,12 @@
 # Dependency Injection Seeding Showcase - NestJs
 
-Using Nest DI as a task runner for seeding the DB. 
+Using Nest DI as a task runner for seeding the DB.
 
 This NestJs repo is based on the [NoticeDev starter rep](https://github.com/notiz-dev/nestjs-prisma-starter).
 
 ## Why?
 
-Nest and the Primsa example provides only a rudimentry examples for seeding. No options to provide dependencies between the seeding tasks and no factories for the seeding.
+Nest and the Prisma example provides only a rudimentary examples for seeding. No options to provide dependencies between the seeding tasks and no factories for the seeding.
 
 **seed.ts**
 
@@ -65,7 +65,7 @@ main()
   });
 ```
 
-In contast, in other frameworks, for example in [ruby rake](https://ruby.github.io/rake/doc/rakefile_rdoc.html#label-Tasks+with+Prerequisites) you can define tasks and dependencies between those tasks. 
+In contast, in other frameworks, for example in [ruby rake](https://ruby.github.io/rake/doc/rakefile_rdoc.html#label-Tasks+with+Prerequisites) you can define tasks and dependencies between those tasks.
 
 ```ruby
 task name: [:prereq1, :prereq2] do |t|
@@ -96,20 +96,21 @@ function javascript(cb) {
 exports.build = series(clean, parallel(css, javascript));
 ```
 
-
-This article shows a way to acheive the same pattern of tasks and tasks dependencies by utiliziing Nest base app DI mechanism for tasks execution system.
+This article shows a way to achieve the same pattern of tasks and tasks dependencies by utilizing Nest base app DI mechanism for tasks execution system.
 
 ## Architecture
 
-The DI (dependency injection) system of Nest, allows declaring services and in those services, declare their dependency on other services. 
+The DI (dependency injection) system of Nest, allows declaring services and in those services, declare their dependency on other services.
 
-This means if service A lifecycle of initialization (OnInit, constructor..) is used for performing a task, then service B that dependt on it, can be sure that when it itself is initialized, then service A has finished its initialization and task.
+This means if service A lifecycle of initialization (OnInit, constructor..) is used for performing a task, then service B that depends on it, can be sure that when it itself is initialized, then service A has finished its initialization and task.
 
 That is the main solution. Using DI to declare services that depends on other services. A service get initialize only after its dependencies finished to be initialized also.
 
 ## Solution Walkthrough
 
 **seed.ts**
+
+In the root file, you create a [standalone Nest app](https://docs.nestjs.com/standalone-applications). Then seeding services can be declared on the app module or be divided to sub modules (Dev, Stage, Common...).
 
 ```ts
 import { NestFactory } from "@nestjs/core";
@@ -143,6 +144,8 @@ main()
 ```
 
 **DevelopmentSeederModule**
+
+Each seeding module declares a seeding services. The `provideSeederService` utility is used here to declare an async factory seeder service.
 
 ```ts
 import { Logger, Module, OnModuleDestroy, OnModuleInit, Scope } from '@nestjs/common';
@@ -179,7 +182,39 @@ export class DevelopmentSeederModule implements OnModuleInit, OnModuleDestroy {
 }
 ```
 
+**provideSeederService.ts**
+
+Seen seeding the DB is asynchronous work, we can not rely on the constructor to be the seeding point of work.
+
+Instead, Nest [asynchronous providers](https://docs.nestjs.com/fundamentals/async-providers) can be used to mark when the service has finished its `initialization` - its seeding work.
+
+Each seeding service, needs to implement an interface consist of a `async seed` function that the factory activate in the initialization process.
+
+```ts
+import { PrismaService } from '../Prisma.service';
+import { SeederClassType } from './SeederClassType';
+
+export function provideSeederService<T extends SeederClassType>(
+  seederClassType: T
+) {
+  const factory = async ({ prisma }: PrismaService, ...rest: any[]) => {
+    const seederService = new seederClassType(prisma, ...rest);
+    await seederService.seed();
+    return seederService;
+  };
+
+  return {
+    // the class will be used as DI token
+    provide: seederClassType,
+    useFactory: factory,
+    inject: seederClassType.$inject,
+  };
+}
+```
+
 **UserSeeder.service.ts**
+
+A seeding service consists of a custom `$inject` property that the factory use for declaring its dependencies and an `async seed` function that do the seeding work.
 
 ```ts
 import { Logger } from '@nestjs/common';
@@ -212,6 +247,8 @@ export class UsersSeeder {
 ```
 
 **UserFactory.service.ts**
+
+A model factory service is used as an encapsulation of the `create` logic for an entity. This includes generating random values and/or use other factories to create dependencies of the model.
 
 ```ts
 import { Logger } from "@nestjs/common";
@@ -302,29 +339,6 @@ export type SeederClassType = SeederClassCtor & {
 };
 ```
 
-**provideSeederService.ts**
-
-```ts
-import { PrismaService } from '../Prisma.service';
-import { SeederClassType } from './SeederClassType';
-
-export function provideSeederService<T extends SeederClassType>(
-  seederClassType: T
-) {
-  const factory = async ({ prisma }: PrismaService, ...rest: any[]) => {
-    const seederService = new seederClassType(prisma, ...rest);
-    await seederService.seed();
-    return seederService;
-  };
-
-  return {
-    // the class will be used as DI token
-    provide: seederClassType,
-    useFactory: factory,
-    inject: seederClassType.$inject,
-  };
-}
-```
 
 ## Instructions
 
@@ -343,7 +357,6 @@ pnpm docker:db
 ```bash
 pnpm prisma migrate dev
 ```
-
 
 ```bash
 pnpm prisma generate
