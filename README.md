@@ -184,7 +184,7 @@ export class DevelopmentSeederModule implements OnModuleInit, OnModuleDestroy {
 
 **provideSeederService.ts**
 
-Seen seeding the DB is asynchronous work, we can not rely on the constructor to be the seeding point of work.
+Since seeding the DB is asynchronous work, we can not rely on the constructor to be the seeding point of work.
 
 Instead, Nest [asynchronous providers](https://docs.nestjs.com/fundamentals/async-providers) can be used to mark when the service has finished its `initialization` - its seeding work.
 
