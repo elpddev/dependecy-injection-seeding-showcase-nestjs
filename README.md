@@ -2,9 +2,8 @@
 
 Using Nest DI as a task runner for seeding the DB.
 
-This NestJs repo is based on the [NoticeDev starter rep](https://github.com/notiz-dev/nestjs-prisma-starter).
-
-The article of the repo can be found on [dev.to](https://dev.to/elpddev/nest-ioc-di-dependency-injection-as-a-seeds-tasks-runner-57k2)
+* This NestJs repo is based on the [NoticeDev starter rep](https://github.com/notiz-dev/nestjs-prisma-starter).
+* The article of the repo can be found on [dev.to](https://dev.to/elpddev/nest-ioc-di-dependency-injection-as-a-seeds-tasks-runner-57k2)
 
 ## Why?
 
