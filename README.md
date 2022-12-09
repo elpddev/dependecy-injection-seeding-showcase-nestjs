@@ -65,7 +65,7 @@ main()
   });
 ```
 
-In contast, in other frameworks, for example in [ruby rake](https://ruby.github.io/rake/doc/rakefile_rdoc.html#label-Tasks+with+Prerequisites) you can define tasks and dependencies between those tasks.
+In contrast, in other frameworks, for example in [ruby rake](https://ruby.github.io/rake/doc/rakefile_rdoc.html#label-Tasks+with+Prerequisites) you can define tasks and dependencies between those tasks.
 
 ```ruby
 task name: [:prereq1, :prereq2] do |t|
