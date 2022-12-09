@@ -339,6 +339,12 @@ export type SeederClassType = SeederClassCtor & {
 };
 ```
 
+## Summary
+
+As you can see, Nest base app with the DI mechanism can be utilizes as a task runner - service initialization - with the ability to define dependencies between the tasks - injection of services into other services.
+
+By using this pattern, you can achieve an asynchronous task runner system with dependencies capability.
+
 
 ## Instructions
 
