@@ -1,4 +1,4 @@
-# Dependency Injection Seeding Showcase - NestJs
+# Nest IOC DI (Dependency Injection) as a Seeds Tasks Runner Showcase
 
 Using Nest DI as a task runner for seeding the DB.
 
